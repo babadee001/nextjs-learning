@@ -40,27 +40,14 @@ jobs:
           command: npm test
 
   deploy:
-    working_directory: ~/project
     docker:
-        - image: circleci/node:6.10-browsers
+      - image: buildpack-deps:trusty
     steps:
-        # Log the current branch
-        - run:
-            name: Show current branch
-            command: echo ${CIRCLE_BRANCH}
-        # Restore cache from the build job which contains the
-        # dist folder that needs to be deployed
-        - restore_cache:
-            key: v1-dist-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_SHA1 }}
-        # Install AWS cli
-        - run:
-            name: Install aws cli
-            command:
-                sudo apt-get -y -qq install awscli
-        # Deploy to the S3 bucket corresponding to the current branch
-        - run:
-            name: Deploy to S3
-            command: aws s3 sync build/ s3://babad
+      - checkout
+      - run:
+          name: Deploy Master to Heroku
+          command: |
+            git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git master
 
 workflows:
   version: 2
