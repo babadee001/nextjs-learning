@@ -35,8 +35,9 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
 
-      # run tests!
-      # - run: yarn test
+      - run:
+          name: Run the test
+          command: npm test
 
   deploy:
     working_directory: ~/project
@@ -67,6 +68,7 @@ workflows:
   build_and_deploy:
     jobs:
       - build
+      - test
       - deploy:
           requires:
             - build
